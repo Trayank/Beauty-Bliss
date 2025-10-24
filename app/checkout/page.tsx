@@ -18,7 +18,18 @@ export default function CheckoutPage() {
 
   const total = (typeof getCartTotalWithDiscount === 'function') ? getCartTotalWithDiscount() : computeTotal();
 
-  const [form, setForm] = useState({
+  // --- TypeScript fix: define form and errors types ---
+  interface FormState {
+    name: string;
+    email: string;
+    address: string;
+    city: string;
+    state: string;
+    postal: string;
+    payment: string;
+  }
+
+  const [form, setForm] = useState<FormState>({
     name: '',
     email: '',
     address: '',
@@ -27,15 +38,17 @@ export default function CheckoutPage() {
     postal: '',
     payment: 'cod',
   });
-  const [errors, setErrors] = useState({});
+
+  const [errors, setErrors] = useState<Partial<FormState>>({});
   const [submitted, setSubmitted] = useState(false);
 
+  // --- Handlers ---
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const validate = () => {
-    const errs: any = {};
+    const errs: Partial<FormState> = {};
     if (!form.name) errs.name = 'Name is required';
     if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Valid email required';
     if (!form.address) errs.address = 'Address required';
@@ -50,7 +63,6 @@ export default function CheckoutPage() {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Construct order payload (here we simply show confirmation)
     const order = {
       id: 'ORD' + Date.now(),
       customer: form,
@@ -59,12 +71,10 @@ export default function CheckoutPage() {
       createdAt: new Date().toISOString(),
     };
 
-    // In a real app you would send `order` to backend.
     console.log('Order placed:', order);
     setSubmitted(true);
     clearCart && clearCart();
 
-    // Optionally redirect to a thank you page after brief delay
     setTimeout(() => {
       router.push('/');
     }, 3000);
