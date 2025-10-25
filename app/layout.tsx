@@ -4,6 +4,7 @@ import { Poppins } from 'next/font/google';
 import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CartBar from "@/components/CartBar";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-grow">
               {children}
+              <CartBar />
             </main>
             <Footer />
           </div>
